@@ -1,0 +1,31 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+repositories { mavenCentral() }
+
+dependencies {
+    // SOLO el runtime de ANTLR para ejecutar el lexer/parser ya generados por el plugin
+    implementation 'org.antlr:antlr4-runtime:4.13.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.0'
+}
+
+// Añadimos la carpeta donde el plugin generará los .java
+sourceSets {
+    main {
+        java {
+            srcDirs += ['src/main/gen']
+        }
+    }
+}
+
+application {
+    mainClass = 'org.example.Main'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+test { useJUnitPlatform() }
