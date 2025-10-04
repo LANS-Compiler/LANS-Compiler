@@ -11,19 +11,52 @@ fragment FALSE : 'fals' ;
 // Paraules clau (abans que IDENT!)
 PROGRAMA : 'programa' ;
 FPROGRAMA : 'fprograma' ;
+
 TIPUS : 'tipus';
 FTIPUS : 'ftipus';
+
 VECTOR : 'vector';
+MIDA : 'mida';
+
 TUPLA : 'tupla';
 FTUPLA : 'ftupla';
+
 ACCIO : 'accio';
 FACCIO : 'facció';
+
 FUNCIO : 'funcio';
+RETORNA: 'retorna' ;
 FFUNCIO : 'ffuncio';
+
 VARIABLES : 'variables';
 FVARIABLES : 'fvariables';
+
 ENT : 'ent';
 ENTSOR : 'entsor';
+
+SI : 'si' ;
+LLAVORS : 'llavors' ;
+ALTRASI : 'altrasi' ;
+ALTRAMENT : 'altrament' ;
+FSI : 'fsi';
+
+PER : 'per' ;
+EN : 'en' ;
+FER : 'fer' ;
+FPER : 'fper' ;
+
+MENTRE : 'mentre' ;
+FMENTRE : 'fmentre' ;
+
+BUCLE : 'bucle' ;
+EXIT : 'exit' ;
+FBUCLE : 'fbucle' ;
+
+// no tinc clar els següents
+LLEGIR : 'llegir' ;
+ESCRIURE : 'escriure' ;
+ESCRIURELN : 'escriureln' ;
+RANG : 'rang';
 
 // Constants
 ENTER : SIGNE? DIGIT+ ;
@@ -32,7 +65,7 @@ COMPLEXA: '#' SIGNE? REAL ',' SIGNE? REAL '#' ;
 BOOLEA: TRUE | FALSE;
 
 // Identificadors
-IDENT : LETTER (LETTER | DIGIT | '_')* ;
+IDENT : LETTER (LETTER | DIGIT)* ;
 
 
 // Separadors o Caràcters Especials
@@ -53,6 +86,10 @@ MODUL: '%';
 
 SEMI : ';' ;
 
+
+// Espais
+WS : [ \t\r\n]+ -> skip ;
+
 // Comentaris i espais
 LINE_COMMENT : '//' ~[\r\n]* -> skip ;
-WS : [ \t\r\n]+ -> skip ;
+MULTI_LINE_COMMENT : '/*' .*? '*/' ;
