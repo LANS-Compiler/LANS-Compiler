@@ -3,6 +3,10 @@ lexer grammar ProvaLexica;
 // Fragments (no emeten token)
 fragment DIGIT : '0'..'9' ;
 fragment LETTER : 'a'..'z' | 'A'..'Z' | 'À'..'ÿ' ; // suport bàsic Unicode llatí
+fragment SIGNE: ('+' | '-') ;
+fragment EXPONENT : 'E' SIGNE? DIGIT+ ;
+fragment TRUE : 'cert' ;
+fragment FALSE : 'fals' ;
 
 // Paraules clau (abans que IDENT!)
 PROGRAMA : 'programa' ;
@@ -21,16 +25,33 @@ FVARIABLES : 'fvariables';
 ENT : 'ent';
 ENTSOR : 'entsor';
 
+// Constants
+ENTER : SIGNE? DIGIT+ ;
+REAL: SIGNE? DIGIT+ '.' DIGIT+ EXPONENT? ;
+COMPLEXA: '#' SIGNE? REAL ',' SIGNE? REAL '#' ;
+BOOLEA: TRUE | FALSE;
+
+// Identificadors
+IDENT : LETTER (LETTER | DIGIT | '_')* ;
+
+
+// Separadors o Caràcters Especials
+
+
+// Operadors
+
+
 // Símbols
 LPAREN : '(' ;
 RPAREN : ')' ;
+PLUS: '+' ;
+MINUS: '-';
 STAR : '*' ;
-PLUS : '+' ;
-SEMI : ';' ;
+DIVISOR: '/';
+//ENTER_DIVISOR: '\';
+MODUL: '%';
 
-// Identificadors i nombres
-IDENT : LETTER (LETTER | DIGIT | '_')* ;
-ENTER : DIGIT+ ;
+SEMI : ';' ;
 
 // Comentaris i espais
 LINE_COMMENT : '//' ~[\r\n]* -> skip ;
