@@ -1,17 +1,17 @@
 plugins {
     id 'java'
-    id 'application'
+    id 'antlr'
 }
 
 repositories { mavenCentral() }
 
 dependencies {
     // SOLO el runtime de ANTLR para ejecutar el lexer/parser ya generados por el plugin
+    antlr 'org.antlr:antlr4:4.13.2'
     implementation 'org.antlr:antlr4-runtime:4.13.2'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.11.0'
 }
 
-// Añadimos la carpeta donde el plugin generará los .java
 sourceSets {
     main {
         java {
@@ -20,8 +20,8 @@ sourceSets {
     }
 }
 
-application {
-    mainClass = 'org.example.Main'
+generateGrammarSource {
+    arguments += ['-visitor', '-long-messages']
 }
 
 tasks.withType(JavaCompile).configureEach {

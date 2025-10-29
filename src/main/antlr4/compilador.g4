@@ -1,6 +1,10 @@
-grammar ProvaLexica;
+grammar compilador;
 
+@header {
+    import java.io.*;
+}
 // ===== Regles sintàctiques =====
+
 programa:
     bloctipus?
     blocaccionsfuncions?
@@ -62,7 +66,6 @@ parametresformals:
     parametreformal (COMMA parametreformal)*
     ;
 
-
 variable:
     (IDENT COLON (tipus_basic | IDENT) SEMI)
     ;
@@ -84,19 +87,19 @@ sentencia
     | per
     | mentre
     | bucle // aquest no ho tinc clar
-    | crida_accio
+    | crida // accio
     | instruccio_lectura_escriptura
     ;
 
 assignacio: IDENT ASSIGN expresio SEMI;
 
 condicional:
-    SI expr_booleana LLAVORS sentencia*
+    SI expresio LLAVORS sentencia*
         altrasi*
         altrament?
     FSI;
 
-altrasi: ALTRASI expr_booleana LLAVORS sentencia*;
+altrasi: ALTRASI expresio LLAVORS sentencia*;
 
 altrament: ALTRAMENT sentencia*;
 
@@ -105,17 +108,25 @@ per:
     sentencia*
     FPER;
 
+bucle:
+    BUCLE
+    FBUCLE;
+
 mentre:
-    MENTRE expr_booleana FER
+    MENTRE expresio FER
     sentencia+
     FMENTRE;
 
+crida: IDENT LPAREN (expresio (COMMA expresio)*)? RPAREN;
 
-
+instruccio_lectura_escriptura: LLEGIR;
 
 // TODO: depen de com entenc que son important que no hi hagi espais entre elements,  com ho faig?
 
 // TODO: fer la coma? potser un complex no es un token sino una regla lexica?
+
+// tenir en compte que una expressio boleana es una expressio, que una funcio es una expressio
+// lo dificil es el tema de fer les jerarquies de operadors
 
 // Fragments (no emeten token)
 fragment DIGIT : '0'..'9' ;
