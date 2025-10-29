@@ -6,7 +6,7 @@ grammar compilador;
 // ===== Regles sintàctiques =====
 
 programa
-    : bloctipus? blocaccionsfuncions? PROGRAMA IDENT blocvariables? sentencia+ FPROGRAMA
+    : bloctipus? blocaccionsfuncions? PROGRAMA IDENT blocvariables? sentencia+ FPROGRAMA EOF
     ;
 
 bloctipus
@@ -88,17 +88,23 @@ acces_tuple
     : DOT IDENT
     ;
 
-crida
-    : LPAREN (expresio (COMMA expresio)*)? RPAREN
+cridaparametres
+    : expresio (COMMA expresio)*
     ;
+
+crida
+    : LPAREN cridaparametres? RPAREN
+    ;
+
+
 
 // TODO: definir tot el tema de operacions tenint en compte l'ordre
 
-// També ha de poder ser un string (ho diu al final)
 expresio
     : valortipusbasic
     | IDENT (acces_vector | acces_tuple | crida)?
     // operacio sobre una o varies expressions
+    | STRING
     ;
 
 
@@ -144,17 +150,19 @@ mentre
 
 
 lectura
-    : LLEGIR LPAREN IDENT (COLON tipus_basic)? RPAREN SEMI
+    : LLEGIR LPAREN IDENT (COLON tipus_basic)?
     ;
 
 escriptura
-    : ESCRIURE
+    : ESCRIURE LPAREN cridaparametres
+    ;
 
 escripturasalt
-    : ESCRIURELN
+    : ESCRIURELN LPAREN cridaparametres?
+    ;
 
 instruccio_lectura_escriptura
-    : llegir
+    : (lectura | escriptura | escripturasalt) RPAREN SEMI
     ;
 
 // Fragments (no emeten token)
@@ -204,7 +212,7 @@ REAL: SIGNE? DIGIT+ DOT DIGIT+ EXPONENT? ;
 COMPLEXA: HASH SIGNE? REAL COMMA SIGNE? REAL HASH ;
 BOOLEA: TRUE | FALSE;
 
-//2.2 Tipus definits
+STRING : '"' ~["\r\n]* '"';
 
 // 4. Identificadors
 IDENT : LETTER (LETTER | DIGIT)* ;
