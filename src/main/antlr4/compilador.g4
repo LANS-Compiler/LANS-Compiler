@@ -5,21 +5,13 @@ grammar compilador;
 }
 // ===== Regles sintàctiques =====
 
-programa:
-    bloctipus?
-    blocaccionsfuncions?
-    PROGRAMA IDENT
-    blocvariables?
-    sentencia+
-    FPROGRAMA
+programa
+    : bloctipus? blocaccionsfuncions? PROGRAMA IDENT blocvariables? sentencia+ FPROGRAMA
     ;
 
-bloctipus:
-    TIPUS
-    declaraciotipus+
-    FTIPUS
+bloctipus
+    : TIPUS declaraciotipus+ FTIPUS
     ;
-
 
 tipus_basic
     : ENTER_T
@@ -28,58 +20,89 @@ tipus_basic
     | BOOLEA_T
     ;
 
-
 declaraciovector
-    : IDENT COLON VECTOR tipus_basic MIDA ENTER(COMMA ENTER)*;
+    : VECTOR tipus_basic MIDA ENTER (COMMA ENTER)*
+    ;
 
 declaraciotupla
-    : IDENT COLON TUPLA (IDENT COLON tipus_basic)+ FTUPLA;
+    : TUPLA (IDENT COLON tipus_basic)+ FTUPLA
+    ;
 
 
 declaraciotipus
-    : declaraciovector | declaraciotupla;
-
-blocaccionsfuncions:
-    (accio | funcio)+
+    : IDENT COLON (declaraciovector | declaraciotupla) SEMI
     ;
 
-accio:
-    ACCIO IDENT LPAREN parametresformals? RPAREN
-        blocvariables?
-        sentencia*
-    FACCIO
+blocaccionsfuncions
+    : (accio | funcio)+
     ;
 
-funcio:
-    FUNCIO IDENT LPAREN parametresformals? RPAREN RETORNA tipus_basic
-        blocvariables?
-        sentencia* RETORNA expresio
-        tipus_basic SEMI
-    FFUNCIO
+
+tipusparametre
+    : ENT
+    | ENTSOR
     ;
 
-tipusparametre: (ENT | ENTSOR);
-
-parametreformal: tipusparametre? IDENT COLON tipus_basic;
-
-parametresformals:
-    parametreformal (COMMA parametreformal)*
+parametreformal
+    : tipusparametre? IDENT COLON tipus_basic
     ;
 
-variable:
-    (IDENT COLON (tipus_basic | IDENT) SEMI)
+parametresformals
+    : parametreformal (COMMA parametreformal)*
     ;
 
-blocvariables:
-    VARIABLES
-        variable*
-    FVARIABLES
+signatura
+    : IDENT LPAREN parametresformals? RPAREN
     ;
 
-// TODO: fer expressio
-expresio:
-    variable
+accio
+    : ACCIO signatura blocvariables? sentencia* FACCIO
     ;
+
+// Sincerament no entenc com s'escriu una funcio (o sigui aixo es el que esta posat al document pero ho veig lios)
+funcio
+    : FUNCIO signatura RETORNA tipus_basic blocvariables? sentencia* RETORNA expresio tipus_basic SEMI FFUNCIO
+    ;
+
+variable
+    : (IDENT COLON (tipus_basic | IDENT) SEMI)
+    ;
+
+blocvariables
+    : VARIABLES variable* FVARIABLES
+    ;
+
+
+valortipusbasic
+    : ENTER
+    | REAL
+    | COMPLEXA
+    | BOOLEA
+    ;
+
+acces_vector
+    : (LBRACKET expresio RBRACKET)+
+    ;
+
+acces_tuple
+    : DOT IDENT
+    ;
+
+crida
+    : LPAREN (expresio (COMMA expresio)*)? RPAREN
+    ;
+
+// TODO: definir tot el tema de operacions tenint en compte l'ordre
+
+// També ha de poder ser un string (ho diu al final)
+expresio
+    : valortipusbasic
+    | IDENT (acces_vector | acces_tuple | crida)?
+    // operacio sobre una o varies expressions
+    ;
+
+
+// Es normal que una cosa la pugui veure tant com una expressio com una sentencia? o sigui una crida pot ser interpretat com les dos....
 
 sentencia
     : assignacio
@@ -91,42 +114,48 @@ sentencia
     | instruccio_lectura_escriptura
     ;
 
-assignacio: IDENT ASSIGN expresio SEMI;
+assignacio
+    : IDENT ASSIGN expresio SEMI
+    ;
 
-condicional:
-    SI expresio LLAVORS sentencia*
-        altrasi*
-        altrament?
-    FSI;
+condicional
+    : SI expresio LLAVORS sentencia* altrasi* altrament? FSI
+    ;
 
-altrasi: ALTRASI expresio LLAVORS sentencia*;
+altrasi
+    : ALTRASI expresio LLAVORS sentencia*
+    ;
 
-altrament: ALTRAMENT sentencia*;
+altrament
+    : ALTRAMENT sentencia*
+    ;
 
-per:
-    PER IDENT EN RANG LPAREN ENTER (COMMA ENTER)? RPAREN FER
-    sentencia*
-    FPER;
+per
+    : PER IDENT EN RANG LPAREN ENTER (COMMA ENTER)? RPAREN FER sentencia* FPER
+    ;
 
-bucle:
-    BUCLE
-    FBUCLE;
+bucle
+    : BUCLE FBUCLE
+    ;
 
-mentre:
-    MENTRE expresio FER
-    sentencia+
-    FMENTRE;
+mentre
+    : MENTRE expresio FER sentencia+ FMENTRE
+    ;
 
-crida: IDENT LPAREN (expresio (COMMA expresio)*)? RPAREN;
 
-instruccio_lectura_escriptura: LLEGIR;
+lectura
+    : LLEGIR LPAREN IDENT (COLON tipus_basic)? RPAREN SEMI
+    ;
 
-// TODO: depen de com entenc que son important que no hi hagi espais entre elements,  com ho faig?
+escriptura
+    : ESCRIURE
 
-// TODO: fer la coma? potser un complex no es un token sino una regla lexica?
+escripturasalt
+    : ESCRIURELN
 
-// tenir en compte que una expressio boleana es una expressio, que una funcio es una expressio
-// lo dificil es el tema de fer les jerarquies de operadors
+instruccio_lectura_escriptura
+    : llegir
+    ;
 
 // Fragments (no emeten token)
 fragment DIGIT : '0'..'9' ;
@@ -171,8 +200,8 @@ BOOLEA_T  : 'boolea' ;
 // 2. Tipus de dades En LANS tenim tipus bàsics de dades i tipus definits.
 // 2.1 Tipus bàsics
 ENTER : SIGNE? DIGIT+ ;
-REAL: SIGNE? DIGIT+ '.' DIGIT+ EXPONENT? ;
-COMPLEXA: '#' SIGNE? REAL ',' SIGNE? REAL '#' ;
+REAL: SIGNE? DIGIT+ DOT DIGIT+ EXPONENT? ;
+COMPLEXA: HASH SIGNE? REAL COMMA SIGNE? REAL HASH ;
 BOOLEA: TRUE | FALSE;
 
 //2.2 Tipus definits
@@ -248,6 +277,8 @@ RPAREN : ')' ;
 SEMI : ';' ;
 COLON : ':';
 COMMA : ',';
+DOT : '.';
+HASH : '#';
 
 // Espais
 WS : [ \t\r\n]+ -> skip ;
