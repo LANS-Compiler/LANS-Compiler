@@ -92,12 +92,12 @@ acces_tuple
 
 // Un accés a vector
 acces_vector
-    : LBRACKET expresio RBRACKET
+    : (LBRACKET expresio RBRACKET)+
     ;
 
 // Una crida a una funció
 crida
-    : IDENT LPAREN cridaparametres? RPAREN
+    : LPAREN cridaparametres? RPAREN
     ;
 
 cridaparametres
@@ -171,12 +171,12 @@ per
 
 // 7.4 Mentre
 mentre
-    : MENTRE expresio FER sentencia* FMENTRE
+    : MENTRE expresio FER sentencia+ FMENTRE
     ;
 
 // 7.5 Bucle
 bucle
-    : BUCLE sentencia* (EXIT expresio SEMI sentencia*)* FBUCLE
+    : BUCLE sentencia* EXIT expresio SEMI sentencia* FBUCLE
     ;
 
 // 7.6 Crida a acció
@@ -204,7 +204,7 @@ sentencia
     | per
     | mentre
     | bucle
-    | crida SEMI
+    | IDENT crida SEMI
     | instruccio_lectura_escriptura
     ;
 
