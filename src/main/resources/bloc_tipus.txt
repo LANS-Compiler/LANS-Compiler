@@ -1,0 +1,9 @@
+tipus
+    llista : vector enter mida 5;
+    matriu : vector enter mida 5, 10;
+    persona : tupla edat : enter cancer : boolea ftupla;
+ftipus
+
+programa proba
+    variable := 3;
+fprograma

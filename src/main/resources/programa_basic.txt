@@ -1,0 +1,3 @@
+programa proba
+    variable := 3;
+fprograma

@@ -1,0 +1,14 @@
+accio zero(entsor a : enter)
+    a := 0;
+facció
+
+funcio numero1(ent a : enter, b : enter) retorna enter
+    a := 0;
+    b := 1;
+    retorna b
+    enter;
+ffuncio
+
+programa proba
+    variable := 3;
+fprograma

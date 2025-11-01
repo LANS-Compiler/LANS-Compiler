@@ -1,0 +1,30 @@
+tipus
+    llista : vector enter mida 5;
+    matriu : vector enter mida 5, 10;
+    persona : tupla edat : enter cancer : boolea ftupla;
+ftipus
+
+accio zero(entsor a : enter)
+    a := 0;
+facció
+
+funcio numero1(ent a : enter, b : enter) retorna enter
+    a := 0;
+    b := 1;
+    retorna b
+    enter;
+ffuncio
+
+
+programa proba
+    variables
+        l : llista;
+        m : matriu;
+        p : persona;
+        a : enter;
+        b : boolea;
+        r : real;
+        c : complex;
+    fvariables
+    variable := 3;
+fprograma

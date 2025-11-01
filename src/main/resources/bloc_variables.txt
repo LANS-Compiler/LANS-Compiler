@@ -1,0 +1,12 @@
+programa proba
+    variables
+        l : llista;
+        m : matriu;
+        p : persona;
+        a : enter;
+        b : boolea;
+        r : real;
+        c : complex;
+    fvariables
+    variable := 3;
+fprograma

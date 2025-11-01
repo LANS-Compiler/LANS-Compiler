@@ -1,0 +1,6 @@
+tipus
+ftipus
+
+programa proba
+    variable := 3;
+fprograma

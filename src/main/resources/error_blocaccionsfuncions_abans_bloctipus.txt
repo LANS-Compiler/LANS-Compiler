@@ -1,0 +1,12 @@
+accio zero(entsor a : enter)
+    a := 0;
+facció
+
+tipus
+    llista : vector enter mida 5;
+ftipus
+
+
+programa proba
+    variable := 3;
+fprograma
