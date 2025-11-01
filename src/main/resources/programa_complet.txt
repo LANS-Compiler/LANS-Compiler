@@ -27,4 +27,15 @@ programa proba
         c : complex;
     fvariables
     variable := 3;
+    variable2 := 0;
+    per variable2 en rang(0, 3) fer
+        variable2 := (variable2 + 1);
+    fper
+
+    variable2 := 2 + 3 - 4 * 5 / ~3; // Seria (2 + 3) - ((4 * 5) / (~3))
 fprograma
+
+
+
+
+

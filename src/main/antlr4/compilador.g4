@@ -4,15 +4,12 @@ grammar compilador;
     import java.io.*;
 }
 // ===== Regles sintàctiques =====
-
 programa
     : bloctipus? blocaccionsfuncions? PROGRAMA IDENT blocvariables? sentencia+ FPROGRAMA EOF
     ;
 
-bloctipus
-    : TIPUS declaraciotipus+ FTIPUS
-    ;
-
+// 2. Tipus de dades En LANS tenim tipus bàsics de dades i tipus definits.
+// 2.1 Tipus bàsics
 tipus_basic
     : ENTER_T
     | REAL_T
@@ -20,39 +17,30 @@ tipus_basic
     | BOOLEA_T
     ;
 
+// 2.2 Tipus definits
+// 2.2.1 Vector
 declaraciovector
     : VECTOR tipus_basic MIDA ENTER (COMMA ENTER)*
     ;
 
+// 2.2.2 Tupla
 declaraciotupla
     : TUPLA (IDENT COLON tipus_basic)+ FTUPLA
     ;
 
+// 3. Estructura general d'un programa LANS
+// 3.1 Bloc de declaració de tipus
+bloctipus
+    : TIPUS declaraciotipus+ FTIPUS
+    ;
 
 declaraciotipus
     : IDENT COLON (declaraciovector | declaraciotupla) SEMI
     ;
 
+// 3.2 Bloc d’accions i funcions
 blocaccionsfuncions
     : (accio | funcio)+
-    ;
-
-
-tipusparametre
-    : ENT
-    | ENTSOR
-    ;
-
-parametreformal
-    : tipusparametre? IDENT COLON tipus_basic
-    ;
-
-parametresformals
-    : parametreformal (COMMA parametreformal)*
-    ;
-
-signatura
-    : IDENT LPAREN parametresformals? RPAREN
     ;
 
 accio
@@ -63,15 +51,34 @@ funcio
     : FUNCIO signatura RETORNA tipus_basic blocvariables? sentencia* RETORNA expresio tipus_basic SEMI FFUNCIO
     ;
 
-variable
-    : IDENT COLON (tipus_basic | IDENT) SEMI
+signatura
+    : IDENT LPAREN parametresformals? RPAREN
     ;
 
+parametresformals
+    : parametreformal (COMMA parametreformal)*
+    ;
+
+parametreformal
+    : tipusparametre? IDENT COLON tipus_basic
+    ;
+
+tipusparametre
+    : ENT
+    | ENTSOR
+    ;
+
+// 3.3 Bloc de declaració de variables de tipus definit
 blocvariables
     : VARIABLES variable* FVARIABLES
     ;
 
+variable
+    : IDENT COLON (tipus_basic | IDENT) SEMI
+    ;
 
+// 6. Expressions
+// Un valor constant de tipus bàsic
 valortipusbasic
     : ENTER
     | REAL
@@ -79,33 +86,40 @@ valortipusbasic
     | BOOLEA
     ;
 
+// Un accés a tupla
+acces_tuple
+    : DOT IDENT
+    ;
+
+// Un accés a vector
 acces_vector
     : (LBRACKET expresio RBRACKET)+
     ;
 
-acces_tuple
-    : DOT IDENT
+// Una crida a una funció
+crida
+    : LPAREN cridaparametres? RPAREN
     ;
 
 cridaparametres
     : expresio (COMMA expresio)*
     ;
 
-crida
-    : LPAREN cridaparametres? RPAREN
+// Una operació sobre una o vàries expressions
+// Per a les operacions, cal definir una jerarquia d'ordre
+atomExpresio
+    : valortipusbasic
+    | IDENT (acces_vector | acces_tuple | crida)*
+    | LPAREN expresio RPAREN
+    | STRING
     ;
 
-
 expresio
-  : operacio
-  ;
-
-operacio
     : operacioRelacional ((OR | AND) operacioRelacional)*
     ;
 
 operacioRelacional
-    : operacioAdditiva ((NOT_EQUAL | LESS | LESS_EQUAL | GRATER | GRATER_EQUAL | EQUAL) operacioAdditiva)*
+    : operacioAdditiva ((NOT_EQUAL | EQUAL | LESS | LESS_EQUAL | GRATER | GRATER_EQUAL) operacioAdditiva)*
     ;
 
 operacioAdditiva
@@ -113,34 +127,21 @@ operacioAdditiva
     ;
 
 operacioMultiplicativa
-    : operacioUnaria ((STAR | DIVISOR | ENTER_DIVISOR | MODUL) operacioUnaria)*
+    : operacioUnitaria ((STAR | DIVISOR | ENTER_DIVISOR | MODUL) operacioUnitaria)*
     ;
 
-operacioUnaria
-    : (MINUS_UNIT | NOT) operacioUnaria
-    | atom
+operacioUnitaria
+    : MINUS_UNIT? atomExpresio
+    | NOT+ atomExpresio
     ;
 
-atom
-  : LPAREN operacio RPAREN
-  | valortipusbasic
-  | IDENT (acces_vector | acces_tuple | crida)?
-  | STRING
-  ;
-
-sentencia
-    : IDENT (assignacio | crida)
-    | condicional
-    | per
-    | mentre
-    | bucle
-    | instruccio_lectura_escriptura
-    ;
-
+// 7. Sentències
+// 7.1 Assignació
 assignacio
-    : ASSIGN expresio SEMI
+    : IDENT ASSIGN expresio SEMI
     ;
 
+// 7.2 Condicional
 condicional
     : SI expresio LLAVORS sentencia* altrasi* altrament? FSI
     ;
@@ -153,18 +154,24 @@ altrament
     : ALTRAMENT sentencia*
     ;
 
+// 7.3 Per
 per
     : PER IDENT EN RANG LPAREN ENTER (COMMA ENTER)? RPAREN FER sentencia* FPER
     ;
 
+// 7.4 Mentre
 mentre
     : MENTRE expresio FER sentencia+ FMENTRE
     ;
 
+// 7.5 Bucle
 bucle
     : BUCLE sentencia* EXIT expresio SEMI sentencia* FBUCLE
     ;
 
+// 7.6 Crida a acció
+// ...
+// 7.7 Lectura/escriptura
 lectura
     : LLEGIR LPAREN IDENT (COLON tipus_basic)? RPAREN SEMI
     ;
@@ -178,9 +185,17 @@ escripturasalt
     ;
 
 instruccio_lectura_escriptura
-    : lectura
-    | escriptura
-    | escripturasalt
+    : (lectura | escriptura | escripturasalt) // T'he tret els RPAREN SEMI i els he repetit als 3 tipus, per llegibiliatt
+    ;
+
+sentencia
+    : assignacio
+    | condicional
+    | per
+    | mentre
+    | bucle
+    | IDENT crida SEMI
+    | instruccio_lectura_escriptura
     ;
 
 // Fragments (no emeten token)
