@@ -27,4 +27,8 @@ programa proba
         c : complex;
     fvariables
     variable := 3;
+    variable2 := 0;
+    per variable2 en rang(0, 3) fer
+        variable2 := (variable2 + 1);
+    fper
 fprograma
