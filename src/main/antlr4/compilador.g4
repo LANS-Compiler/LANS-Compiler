@@ -105,44 +105,32 @@ cridaparametres
     ;
 
 // Una operació sobre una o vàries expressions
+atomExpresio
+    : valortipusbasic
+    | IDENT (acces_vector | acces_tuple | crida)*
+    | LPAREN expresio RPAREN
+    | STRING
+    ;
 
 expresio
-    : orExpresio
+    : operacioRelacional ((OR | AND) operacioRelacional)*
     ;
 
-orExpresio
-    : andExpresio (OR andExpresio)*
+operacioRelacional
+    : operacioAdditiva ((NOT_EQUAL | EQUAL | LESS | LESS_EQUAL | GRATER | GRATER_EQUAL) operacioAdditiva)*
     ;
 
-andExpresio
-    : igualtatExpresio (AND igualtatExpresio)*
+operacioAdditiva
+    : operacioMultiplicativa ((PLUS | MINUS) operacioMultiplicativa)*
     ;
 
-igualtatExpresio
-    : relacionalExpresio ((EQUAL | NOT_EQUAL) relacionalExpresio)*
+operacioMultiplicativa
+    : operacioUnitaria ((STAR | DIVISOR | ENTER_DIVISOR | MODUL) operacioUnitaria)*
     ;
 
-relacionalExpresio
-    : sumarestaExpresio ((LESS | LESS_EQUAL | GRATER | GRATER_EQUAL) sumarestaExpresio)*
-    ;
-
-sumarestaExpresio
-    : multiplicadivideixExpresio ((PLUS | MINUS) multiplicadivideixExpresio)*
-    ;
-
-multiplicadivideixExpresio
-    : unariExpresio ((STAR | DIVISOR | ENTER_DIVISOR | MODUL) unariExpresio)*
-    ;
-
-unariExpresio
-    : (MINUS_UNIT | NOT)? atomExpresio
-    ;
-
-atomExpresio
-    : LPAREN expresio RPAREN
-    | valortipusbasic
-    | IDENT (acces_vector | acces_tuple | crida)*
-    | STRING
+operacioUnitaria
+    : MINUS_UNIT? atomExpresio
+    | NOT+ atomExpresio
     ;
 
 // 7. Sentències

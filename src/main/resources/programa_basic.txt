@@ -1,6 +1,6 @@
 programa proba
     variable := 2 + 3 * 4;        // Hauria de ser: 2 + (3 * 4)
-    variable := 2 * 3 + 4;        // Hauria de ser: (2 * 3) + 4
-    variable := ~2 + 3;           // Hauria de ser: (~2) + 3
-    variable2 := 2 + 3 - 4 * 5 / ~3; // Seria (2 + 3) - ((4 * 5) / (~3))
+    joan := 1 * 2 - 3; // Haria de ser (1*2) - 3
+    miquel := 1 * (2 - 3); // ...
+    pau := 2 / 4 + 5 * 6; // Hauria de ser (2 / 4) + (5 * 6)
 fprograma
