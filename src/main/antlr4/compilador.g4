@@ -59,13 +59,12 @@ accio
     : ACCIO signatura blocvariables? sentencia* FACCIO
     ;
 
-// Sincerament no entenc com s'escriu una funcio (o sigui aixo es el que esta posat al document pero ho veig lios)
 funcio
     : FUNCIO signatura RETORNA tipus_basic blocvariables? sentencia* RETORNA expresio tipus_basic SEMI FFUNCIO
     ;
 
 variable
-    : (IDENT COLON (tipus_basic | IDENT) SEMI)
+    : IDENT COLON (tipus_basic | IDENT) SEMI
     ;
 
 blocvariables
@@ -97,31 +96,49 @@ crida
     ;
 
 
-
-// TODO: definir tot el tema de operacions tenint en compte l'ordre
-
 expresio
-    : valortipusbasic
-    | IDENT (acces_vector | acces_tuple | crida)?
-    // operacio sobre una o varies expressions
-    | STRING
+  : operacio
+  ;
+
+operacio
+    : operacioRelacional ((OR | AND) operacioRelacional)*
     ;
 
+operacioRelacional
+    : operacioAdditiva ((NOT_EQUAL | LESS | LESS_EQUAL | GRATER | GRATER_EQUAL | EQUAL) operacioAdditiva)*
+    ;
 
-// Es normal que una cosa la pugui veure tant com una expressio com una sentencia? o sigui una crida pot ser interpretat com les dos....
+operacioAdditiva
+    : operacioMultiplicativa ((PLUS | MINUS) operacioMultiplicativa)*
+    ;
+
+operacioMultiplicativa
+    : operacioUnaria ((STAR | DIVISOR | ENTER_DIVISOR | MODUL) operacioUnaria)*
+    ;
+
+operacioUnaria
+    : (MINUS_UNIT | NOT) operacioUnaria
+    | atom
+    ;
+
+atom
+  : LPAREN operacio RPAREN
+  | valortipusbasic
+  | IDENT (acces_vector | acces_tuple | crida)?
+  | STRING
+  ;
 
 sentencia
-    : assignacio
+    : IDENT (assignacio | crida)
     | condicional
     | per
     | mentre
-    | bucle // aquest no ho tinc clar
-    | crida // accio
+    | bucle
     | instruccio_lectura_escriptura
     ;
 
 assignacio
-    : IDENT ASSIGN expresio SEMI
+    : ASSIGN expresio SEMI
     ;
 
 condicional
@@ -140,29 +157,30 @@ per
     : PER IDENT EN RANG LPAREN ENTER (COMMA ENTER)? RPAREN FER sentencia* FPER
     ;
 
-bucle
-    : BUCLE FBUCLE
-    ;
-
 mentre
     : MENTRE expresio FER sentencia+ FMENTRE
     ;
 
+bucle
+    : BUCLE sentencia* EXIT expresio SEMI sentencia* FBUCLE
+    ;
 
 lectura
-    : LLEGIR LPAREN IDENT (COLON tipus_basic)?
+    : LLEGIR LPAREN IDENT (COLON tipus_basic)? RPAREN SEMI
     ;
 
 escriptura
-    : ESCRIURE LPAREN cridaparametres
+    : ESCRIURE LPAREN cridaparametres RPAREN SEMI
     ;
 
 escripturasalt
-    : ESCRIURELN LPAREN cridaparametres?
+    : ESCRIURELN LPAREN cridaparametres? RPAREN SEMI
     ;
 
 instruccio_lectura_escriptura
-    : (lectura | escriptura | escripturasalt) RPAREN SEMI
+    : lectura
+    | escriptura
+    | escripturasalt
     ;
 
 // Fragments (no emeten token)
