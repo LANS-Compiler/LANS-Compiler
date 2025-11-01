@@ -4,7 +4,6 @@ grammar compilador;
     import java.io.*;
 }
 // ===== Regles sintàctiques =====
-
 programa
     : bloctipus? blocaccionsfuncions? PROGRAMA IDENT blocvariables? sentencia+ FPROGRAMA EOF
     ;
@@ -19,10 +18,12 @@ tipus_basic
     ;
 
 // 2.2 Tipus definits
+// 2.2.1 Vector
 declaraciovector
     : VECTOR tipus_basic MIDA ENTER (COMMA ENTER)*
     ;
 
+// 2.2.2 Tupla
 declaraciotupla
     : TUPLA (IDENT COLON tipus_basic)+ FTUPLA
     ;
@@ -54,17 +55,17 @@ signatura
     : IDENT LPAREN parametresformals? RPAREN
     ;
 
-tipusparametre
-    : ENT
-    | ENTSOR
+parametresformals
+    : parametreformal (COMMA parametreformal)*
     ;
 
 parametreformal
     : tipusparametre? IDENT COLON tipus_basic
     ;
 
-parametresformals
-    : parametreformal (COMMA parametreformal)*
+tipusparametre
+    : ENT
+    | ENTSOR
     ;
 
 // 3.3 Bloc de declaració de variables de tipus definit
@@ -105,6 +106,7 @@ cridaparametres
     ;
 
 // Una operació sobre una o vàries expressions
+// Per a les operacions, cal definir una jerarquia d'ordre
 atomExpresio
     : valortipusbasic
     | IDENT (acces_vector | acces_tuple | crida)*
