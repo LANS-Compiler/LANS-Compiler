@@ -106,23 +106,41 @@ cridaparametres
 
 // Una operació sobre una o vàries expressions
 
-// ANTL hauria de detectar auto la recursivitat i desfer les expresions en arbre de tipus:
-// expresio : orExpr ; - orExpr : andExpr (OR andExpr)* - andExpr : igualtatExpr (AND igualtatExpr)* ...
-// SI no ho fa, ho podem fer manual
 expresio
-    : expresio OR expresio
-    | expresio AND expresio
-    | expresio (EQUAL | NOT_EQUAL) expresio
-    | expresio (LESS | LESS_EQUAL | GRATER | GRATER_EQUAL) expresio
-    | expresio (PLUS | MINUS) expresio
-    | expresio (STAR | DIVISOR | ENTER_DIVISOR | MODUL) expresio
-    | (MINUS_UNIT | NOT) expresio
-    | LPAREN expresio RPAREN
-    | expresioatomica
+    : orExpresio
     ;
 
-expresioatomica
-    : valortipusbasic
+orExpresio
+    : andExpresio (OR andExpresio)*
+    ;
+
+andExpresio
+    : igualtatExpresio (AND igualtatExpresio)*
+    ;
+
+igualtatExpresio
+    : relacionalExpresio ((EQUAL | NOT_EQUAL) relacionalExpresio)*
+    ;
+
+relacionalExpresio
+    : sumarestaExpresio ((LESS | LESS_EQUAL | GRATER | GRATER_EQUAL) sumarestaExpresio)*
+    ;
+
+sumarestaExpresio
+    : multiplicadivideixExpresio ((PLUS | MINUS) multiplicadivideixExpresio)*
+    ;
+
+multiplicadivideixExpresio
+    : unariExpresio ((STAR | DIVISOR | ENTER_DIVISOR | MODUL) unariExpresio)*
+    ;
+
+unariExpresio
+    : (MINUS_UNIT | NOT)? atomExpresio
+    ;
+
+atomExpresio
+    : LPAREN expresio RPAREN
+    | valortipusbasic
     | IDENT (acces_vector | acces_tuple | crida)*
     | STRING
     ;
