@@ -9,10 +9,9 @@ programa
     : bloctipus? blocaccionsfuncions? PROGRAMA IDENT blocvariables? sentencia+ FPROGRAMA EOF
     ;
 
-bloctipus
-    : TIPUS declaraciotipus+ FTIPUS
-    ;
 
+// 2. Tipus de dades En LANS tenim tipus bàsics de dades i tipus definits.
+// 2.1 Tipus bàsics
 tipus_basic
     : ENTER_T
     | REAL_T
@@ -20,6 +19,7 @@ tipus_basic
     | BOOLEA_T
     ;
 
+// 2.2 Tipus definits
 declaraciovector
     : VECTOR tipus_basic MIDA ENTER (COMMA ENTER)*
     ;
@@ -28,15 +28,33 @@ declaraciotupla
     : TUPLA (IDENT COLON tipus_basic)+ FTUPLA
     ;
 
+// 3. Estructura general d'un programa LANS
+// 3.1 Bloc de declaració de tipus
+bloctipus
+    : TIPUS declaraciotipus+ FTIPUS
+    ;
 
 declaraciotipus
     : IDENT COLON (declaraciovector | declaraciotupla) SEMI
     ;
 
+
+// 3.2 Bloc d’accions i funcions
 blocaccionsfuncions
     : (accio | funcio)+
     ;
 
+accio
+    : ACCIO signatura blocvariables? sentencia* FACCIO
+    ;
+
+funcio
+    : FUNCIO signatura RETORNA tipus_basic blocvariables? sentencia* RETORNA expresio tipus_basic SEMI FFUNCIO
+    ;
+
+signatura
+    : IDENT LPAREN parametresformals? RPAREN
+    ;
 
 tipusparametre
     : ENT
@@ -51,27 +69,18 @@ parametresformals
     : parametreformal (COMMA parametreformal)*
     ;
 
-signatura
-    : IDENT LPAREN parametresformals? RPAREN
-    ;
-
-accio
-    : ACCIO signatura blocvariables? sentencia* FACCIO
-    ;
-
-funcio
-    : FUNCIO signatura RETORNA tipus_basic blocvariables? sentencia* RETORNA expresio tipus_basic SEMI FFUNCIO
+// 3.3 Bloc de declaració de variables de tipus definit
+blocvariables
+    : VARIABLES variable* FVARIABLES
     ;
 
 variable
     : IDENT COLON (tipus_basic | IDENT) SEMI
     ;
 
-blocvariables
-    : VARIABLES variable* FVARIABLES
-    ;
 
-
+// 6. Expressions
+// Un valor constant de tipus bàsic
 valortipusbasic
     : ENTER
     | REAL
@@ -79,28 +88,28 @@ valortipusbasic
     | BOOLEA
     ;
 
+// Un accés a vector
 acces_vector
     : (LBRACKET expresio RBRACKET)+
     ;
 
+// Un accés a tupla
 acces_tuple
     : DOT IDENT
+    ;
+
+// Una crida a una funció
+crida
+    : LPAREN cridaparametres? RPAREN
     ;
 
 cridaparametres
     : expresio (COMMA expresio)*
     ;
 
-crida
-    : LPAREN cridaparametres? RPAREN
-    ;
 
-
+// Una operació sobre una o vàries expressions
 expresio
-  : operacio
-  ;
-
-operacio
     : operacioRelacional ((OR | AND) operacioRelacional)*
     ;
 
@@ -122,12 +131,14 @@ operacioUnaria
     ;
 
 atom
-  : LPAREN operacio RPAREN
+  : LPAREN expresio RPAREN
   | valortipusbasic
   | IDENT (acces_vector | acces_tuple | crida)?
   | STRING
   ;
 
+
+// 7. Sentències
 sentencia
     : IDENT (assignacio | crida)
     | condicional
@@ -137,10 +148,12 @@ sentencia
     | instruccio_lectura_escriptura
     ;
 
+// 7.1 Assignació
 assignacio
     : ASSIGN expresio SEMI
     ;
 
+// 7.2 Condicional
 condicional
     : SI expresio LLAVORS sentencia* altrasi* altrament? FSI
     ;
@@ -153,18 +166,22 @@ altrament
     : ALTRAMENT sentencia*
     ;
 
+// 7.3 Per
 per
     : PER IDENT EN RANG LPAREN ENTER (COMMA ENTER)? RPAREN FER sentencia* FPER
     ;
 
+// 7.4 Mentre
 mentre
     : MENTRE expresio FER sentencia+ FMENTRE
     ;
 
+// 7.5 Bucle
 bucle
     : BUCLE sentencia* EXIT expresio SEMI sentencia* FBUCLE
     ;
 
+// 7.7 Lectura/escriptura
 lectura
     : LLEGIR LPAREN IDENT (COLON tipus_basic)? RPAREN SEMI
     ;
