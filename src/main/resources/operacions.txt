@@ -1,0 +1,6 @@
+programa proba
+    variable := (2 + 3) * 4;        // Hauria de ser: 2 + (3 * 4)
+    variable := 2 * 3 + 4;        // Hauria de ser: (2 * 3) + 4
+    variable := ~2 + 3;           // Hauria de ser: (~2) + 3
+    variable2 := 2 + 3 - 4 * 5 / ~3; // Seria (2 + 3) - ((4 * 5) / (~3))
+fprograma
