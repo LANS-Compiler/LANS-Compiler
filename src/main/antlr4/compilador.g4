@@ -239,6 +239,37 @@ REAL_T    : 'real' ;
 COMPLEX_T : 'complex' ;
 BOOLEA_T  : 'boolea' ;
 
+// 7.2 Condicional
+SI : 'si' ;
+LLAVORS : 'llavors' ;
+ALTRASI : 'altrasi' ;
+ALTRAMENT : 'altrament' ;
+FSI : 'fsi';
+
+// 7.3 Per
+PER : 'per' ;
+EN : 'en' ;
+RANG : 'rang';
+FER : 'fer' ;
+FPER : 'fper' ;
+
+// 7.4 Mentre
+MENTRE : 'mentre' ;
+FMENTRE : 'fmentre' ;
+
+// 7.5 Bucle
+BUCLE : 'bucle' ;
+EXIT : 'exit' ;
+FBUCLE : 'fbucle' ;
+
+// 7.7 Lectura/escriptura
+LLEGIR : 'llegir' ;
+ESCRIURE : 'escriure' ;
+ESCRIURELN : 'escriureln' ;
+
+NOT: 'no';
+
+
 
 // 2. Tipus de dades En LANS tenim tipus bàsics de dades i tipus definits.
 // 2.1 Tipus bàsics
@@ -275,41 +306,12 @@ LESS_EQUAL: '<=';
 GRATER: '>';
 GRATER_EQUAL: '>=';
 
-NOT: 'no';
 AND: '&';
 OR: '|';
 
 // 7. Sentències
 // 7.1 Assignació
 ASSIGN: ':=';
-
-// 7.2 Condicional
-SI : 'si' ;
-LLAVORS : 'llavors' ;
-ALTRASI : 'altrasi' ;
-ALTRAMENT : 'altrament' ;
-FSI : 'fsi';
-
-// 7.3 Per
-PER : 'per' ;
-EN : 'en' ;
-RANG : 'rang';
-FER : 'fer' ;
-FPER : 'fper' ;
-
-// 7.4 Mentre
-MENTRE : 'mentre' ;
-FMENTRE : 'fmentre' ;
-
-// 7.5 Bucle
-BUCLE : 'bucle' ;
-EXIT : 'exit' ;
-FBUCLE : 'fbucle' ;
-
-// 7.7 Lectura/escriptura
-LLEGIR : 'llegir' ;
-ESCRIURE : 'escriure' ;
-ESCRIURELN : 'escriureln' ;
 
 // Separadors o Caràcters Especials
 LPAREN : '(' ;
