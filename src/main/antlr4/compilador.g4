@@ -3,6 +3,19 @@ grammar compilador;
 @header {
     import java.io.*;
 }
+
+
+@parser::members{
+    SymTable<Registre> TS = new SymTable<Registre>(1000);
+    boolean errorsem = false;
+    int ultimaAdreca=0;
+
+    //override method
+    public void notifyErrorListeners(Token offendingToken, String msg, RecognitionException e)    {
+        super.notifyErrorListeners(offendingToken,msg,e);
+        error=true;
+    }
+}
 // ===== Regles sintàctiques =====
 
 programa
@@ -12,11 +25,11 @@ programa
 
 // 2. Tipus de dades En LANS tenim tipus bàsics de dades i tipus definits.
 // 2.1 Tipus bàsics
-tipus_basic
-    : ENTER_T
-    | REAL_T
-    | COMPLEX_T
-    | BOOLEA_T
+tipus_basic returns [char tipus]
+    : ENTER_T {$tipus = 'E';}
+    | REAL_T {$tipus = 'R';}
+    | COMPLEX_T {$tipus = 'C';}
+    | BOOLEA_T {$tipus = 'Z';}
     ;
 
 // 2.2 Tipus definits
@@ -74,26 +87,62 @@ blocvariables
     : VARIABLES variable* FVARIABLES
     ;
 
-variable
-    : IDENT COLON (tipus_basic | IDENT) SEMI
+variable returns [char tipus]
+    : i=IDENT COLON
+        (
+            tb=tipus_basic
+            {
+                $tipus = $tb.tipus;
+            }
+        | ti=IDENT
+        {
+            if (TS.existeix($ti.text)) {
+                Registre r = TS.obtenir($ti.text);
+                $tipus = r.getTipus();
+            } else {
+                errorsem = true;
+                System.out.println(
+                    "Error de tipus detectat a la línia " + $ti.getLine()
+                );
+            }
+        }
+        )
+        {
+              if (!errorsem) {
+                  if (!TS.existeix($i.text)) {
+                      TS.inserir($i.text, new Registre($i.text, $tipus, ultimaAdreca++));
+                  } else {
+                      errorsem = true;
+                      System.out.println(
+                          "Variable ja declarada a la línia " + $i.getLine()
+                      );
+                  }
+              }
+        }
+        SEMI
     ;
 
 
 // 6. Expressions
 // Un valor constant de tipus bàsic
-valortipusbasic
-    : ENTER
-    | REAL
-    | COMPLEXA
-    | BOOLEA
+valortipusbasic returns [char tipus]
+    @init{ System.out.println(“Entrem a la regla 'valortipusbasic'”);}
+    @after{System.out.println(“Sortim de la regla 'valortipusbasic'”);}
+    : ENTER {$tipus = 'E';}// E (Enter)
+    | REAL {$tipus = 'R';}// R (Real)
+    | COMPLEXA {$tipus = 'C';}// C (Complex)
+    | BOOLEA {$tipus = 'Z';}// B (Boleà)
     ;
 
 // Un accés a vector
+
+// S'hauria de retornar el tipus del vector sempre que l'acces fos dintre els limits
 acces_vector
     : (LBRACKET expresio RBRACKET)+
     ;
 
 // Un accés a tupla
+//S'hauria de retornar e ltipus del camp de la tuple sempre que existis
 acces_tuple
     : DOT IDENT
     ;
